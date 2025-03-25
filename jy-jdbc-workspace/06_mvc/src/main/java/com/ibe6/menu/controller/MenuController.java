@@ -11,6 +11,7 @@ package com.ibe6.menu.controller;
           - 응답 데이터만 돌려줄껀지 (후에 REST방식의 개념)
           - 응답 화면(PrintResultView)을 출력시킬껀지
  */
+import com.ibe6.menu.model.dto.CategoryDto;
 import com.ibe6.menu.model.dto.MenuDto;
 import com.ibe6.menu.model.service.MenuService;
 import com.ibe6.menu.view.PrintResultView;
@@ -49,5 +50,36 @@ public class MenuController {
 
     }
 
+    public List<CategoryDto> selectCategoryList(){
+        List<CategoryDto> list = menuService.selectCategoryList();
+        return list;
+    }
 
+    public void modifyMenu(Map<String, String> requestParam){
+        MenuDto menu = new MenuDto();
+        menu.setMenuCode( Integer.parseInt(requestParam.get("code")) );
+        menu.setMenuName( requestParam.get("name") );
+        menu.setMenuPrice( Integer.parseInt(requestParam.get("price")) );
+        menu.setCategory( requestParam.get("category") );
+        menu.setOrderableStatus( requestParam.get("orderable") );
+
+        int result = menuService.modifyMenu(menu);
+        if(result > 0){
+            printResultView.displaySuccessMessage("update");
+        }else{
+            printResultView.displayFailMessage("update");
+        }
+    }
+
+    public void removeMenu(Map<String, String> requestParam){
+        int menuCode = Integer.parseInt(requestParam.get("code"));
+
+        int result = menuService.removeMenu(menuCode);
+
+        if(result > 0){
+            printResultView.displaySuccessMessage("delete");
+        }else{
+            printResultView.displayFailMessage("delete");
+        }
+    }
 }

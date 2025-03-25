@@ -1,5 +1,6 @@
 package com.ibe6.menu.model.dao;
 
+import com.ibe6.menu.model.dto.CategoryDto;
 import com.ibe6.menu.model.dto.MenuDto;
 
 import java.io.FileInputStream;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Properties;
 
 import static com.ibe6.common.JDBCTemplate.close;
+import static com.ibe6.common.JDBCTemplate.getConnection;
 
 public class MenuDao {
 
@@ -82,5 +84,78 @@ public class MenuDao {
 
     }
 
+    public List<CategoryDto> selectAllCategory(Connection conn){
+        // select => 여러행 => ResultSet => List<CategoryDto>
+        List<CategoryDto> list = new ArrayList<>();
+        PreparedStatement pstmt = null;
+        ResultSet rset = null;
+        String query = prop.getProperty("selectAllCategory");
+
+        try {
+            pstmt = conn.prepareStatement(query);
+            rset = pstmt.executeQuery();
+
+            while(rset.next()){
+                list.add(new CategoryDto(
+                        rset.getInt("category_code"),
+                        rset.getString("category_name"),
+                        rset.getInt("ref_category_code")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            close(rset);
+            close(pstmt);
+        }
+
+        return list;
+    }
+
+
+    public int updateMenu(Connection conn, MenuDto menu){
+        // update => 수정된행수 => int
+        int result = 0;
+        PreparedStatement pstmt = null;
+        String query = prop.getProperty("updateMenu");
+
+        try {
+            pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, menu.getMenuName());
+            pstmt.setInt(2, menu.getMenuPrice());
+            pstmt.setInt(3, Integer.parseInt(menu.getCategory()));
+            pstmt.setString(4, menu.getOrderableStatus());
+            pstmt.setInt(5, menu.getMenuCode());
+
+            result = pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            close(pstmt);
+        }
+        return result;
+    }
+
+    public int deleteMenu(Connection conn, int menuCode){
+        //delete문 => 삭제된 행수 => int
+        int result = 0;
+
+        PreparedStatement pstmt = null;
+        String query = prop.getProperty("deleteMenu");
+
+        try {
+            pstmt = conn.prepareStatement(query);
+            pstmt.setInt(1, menuCode);
+
+            result = pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally {
+            close(pstmt);
+        }
+        return result;
+    }
 
 }

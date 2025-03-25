@@ -11,6 +11,7 @@ package com.ibe6.run;
  */
 
 import com.ibe6.menu.view.MenuManageView;
+import com.ibe6.order.view.OrderView;
 
 import java.util.Scanner;
 
@@ -32,7 +33,7 @@ public class MainView {
 
             switch (num){
                 case 1: new MenuManageView().menuManageMainView(); break;
-                case 2: break;
+                case 2: new OrderView().orderMainView(); break;
                 case 0:
                     System.out.println("그동안 이용해주셔서 감사합니다."); return;
                 default:

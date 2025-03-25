@@ -1,6 +1,7 @@
 package com.ibe6.menu.view;
 
 import com.ibe6.menu.controller.MenuController;
+import com.ibe6.menu.model.dto.CategoryDto;
 import com.ibe6.menu.model.dto.MenuDto;
 
 import java.util.List;
@@ -59,11 +60,13 @@ public class MenuManageView {
 
     // 전체 카테고리 목록 조회 서브 화면
     public void categoryListView(){
-        List<MenuDto> list = categoryController.selectMenuList();
+        List<CategoryDto> list = menuController.selectCategoryList();
 
-        System.out.println("\n----------------- 조회 결과 -----------------");
-        for(MenuDto category : list){
-            System.out.println(category);
+        if(list.isEmpty()){
+            System.out.println("조회된 카테고리가 없습니다.");
+        }else{
+            //list.forEach(category -> System.out.println(category));
+            list.forEach(System.out::println);
         }
     }
 
@@ -93,10 +96,34 @@ public class MenuManageView {
     // 메뉴 정보 수정용 폼 서브 화면
     public void modifyMenuForm(){
 
+        System.out.println("\n------- 메뉴 수정 폼 -------");
+        System.out.print("수정할 메뉴번호: ");
+        String menuCode = sc.nextLine();
+        System.out.print("수정정보(메뉴명): ");
+        String menuName = sc.nextLine();
+        System.out.print("수정정보(메뉴가격): ");
+        String menuPrice = sc.nextLine();
+        System.out.print("수정정보(카테고리번호): ");
+        String category = sc.nextLine();
+        System.out.print("판매내역에 등록(y/n): ");
+        String orderable = sc.nextLine();
+
+        Map<String, String> requsetParam = Map.of("code", menuCode,
+                "name", menuName, "price", menuPrice, "category", category,
+                "orderable", orderable);
+        menuController.modifyMenu(requsetParam);
     }
 
     // 메뉴 정보 삭제용 폼 서브 화면
     public void removeMenuForm(){
+
+        System.out.println("\n------- 메뉴 삭제 폼 -------");
+        System.out.print("삭제할 메뉴번호: ");
+        String menuCode = sc.nextLine();
+
+        Map<String, String> requestParam = Map.of("code", menuCode);
+
+        menuController.removeMenu(requestParam);
 
     }
 

@@ -1,6 +1,7 @@
 package com.ibe6.menu.model.service;
 
 import com.ibe6.menu.model.dao.MenuDao;
+import com.ibe6.menu.model.dto.CategoryDto;
 import com.ibe6.menu.model.dto.MenuDto;
 
 import java.sql.Connection;
@@ -31,4 +32,35 @@ public class MenuService {
         return result;
     }
 
+    public int modifyMenu(MenuDto menu){
+        Connection conn = getConnection();
+        int result = menuDao.updateMenu(conn, menu);
+        if(result > 0){
+            commit(conn);
+        }else{
+            rollback(conn);
+        }
+        close(conn);
+        return result;
+    }
+
+    public List<CategoryDto> selectCategoryList(){
+        Connection conn = getConnection();
+        List<CategoryDto> list = menuDao.selectAllCategory(conn);
+        close(conn);
+        return list;
+    }
+
+
+    public int removeMenu(int menuCode){
+        Connection conn = getConnection();
+        int result = menuDao.deleteMenu(conn, menuCode);
+        if(result > 0){
+            commit(conn);
+        }else{
+            rollback(conn);
+        }
+        close(conn);
+        return result;
+    }
 }
