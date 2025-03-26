@@ -23,6 +23,7 @@ public class OrderView {
                 \n======= 손님 메뉴 =======
                 1. 주문하기
                 2. 주문내역 확인하기
+                3. 메뉴 검색
                 0. 이전 화면으로 돌아가기
                 >> 입력:""";
 
@@ -33,13 +34,12 @@ public class OrderView {
 
             switch (num) {
                 case 1:
-                    orderForm();
-                    break;
+                    orderForm(); break;
                 case 2:
-                    orderHistoryView();
-                    break;
-                case 0:
-                    return;
+                    orderHistoryView(); break;
+                case 3:
+                    serchMenuForm(); break;
+                case 0: return;
                 default:
                     System.out.println("메뉴를 다시 선택해주세요");
             }
@@ -126,14 +126,21 @@ public class OrderView {
         // 2. 사용자에게 상세조회할 주문번호 입력받기
         // 해당 주문에 어떤 메뉴들이 주문되었는지 조회해보기
         // 메뉴번호, 메뉴명, 메뉴가격, 카테고리명
-        System.out.print("상세조회할 주문번호 입력: ");
-        int orderCode = sc.nextInt();
-        System.out.println("\n---- 상세 내역----");
-
-
-        // 3. 메뉴 검색
-        //    검색할 메뉴명 입력받아서 해당 메뉴명과 일치하는 메뉴정보 조회
-
-
+        System.out.print("\n-상세조회할 주문번호 입력: ");
+        String orderCode = sc.nextLine();
+        List<OrderMenuDto> list = orderController.selectOrderDetail(orderCode);
+        for(OrderMenuDto orderMenu : list){ // {orderMenu{orderAmount: 주문수량, menu:MenuDto객체{메뉴번호, 메뉴명, 카테고리, 가격}}
+            System.out.println(orderMenu.getMenu() + ", 주문수량: " + orderMenu.getOrderAmount() + "개");
+        }
     }
+    // 3. 메뉴 검색
+    //    검색할 메뉴명 입력받아서 해당 메뉴명과 일치하는 메뉴정보 조회
+    public void serchMenuForm(){
+        System.out.println("\n------- 검색창 -------");
+        System.out.print("검색할 메뉴명: ");
+        String search = sc.nextLine();
+
+        orderController.selectMenuByName(search);
+    }
+
 }

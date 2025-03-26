@@ -54,4 +54,18 @@ public class OrderService {
         close(conn);
         return orderList;
     }
+
+    public List<OrderMenuDto> selectOrderDetail(int orderCode){
+        Connection conn = getConnection();
+        List<OrderMenuDto> list = orderDao.selectOrderDetail(conn, orderCode);
+        close(conn);
+        return list;
+    }
+
+    public MenuDto selectMenuByName(String search){
+        Connection conn = getConnection();
+        MenuDto menu = orderDao.selectMenuByName(conn, search);
+        close(conn);
+        return menu;
+    }
 }

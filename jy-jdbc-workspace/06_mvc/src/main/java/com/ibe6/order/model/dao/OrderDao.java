@@ -19,7 +19,7 @@ import static com.ibe6.common.JDBCTemplate.close;
 public class OrderDao {
     private Properties prop = new Properties();
 
-    public OrderDao(){
+    public OrderDao() {
         try {
             prop.loadFromXML(new FileInputStream("src/main/java/com/ibe6/mapper/order-query.xml"));
         } catch (IOException e) {
@@ -27,7 +27,7 @@ public class OrderDao {
         }
     }
 
-    public List<MenuDto> selectMenuByCategory(Connection conn, int categoryCode){
+    public List<MenuDto> selectMenuByCategory(Connection conn, int categoryCode) {
 
         // select문 => 여러행 => ResultSet => List<MenuDto>
         // 최종 담을 변수
@@ -43,7 +43,7 @@ public class OrderDao {
 
             rset = pstmt.executeQuery();
 
-            while (rset.next()){
+            while (rset.next()) {
                 MenuDto menu = new MenuDto();
                 menu.setMenuCode(rset.getInt("menu_code"));
                 menu.setMenuName(rset.getString("menu_name"));
@@ -61,7 +61,7 @@ public class OrderDao {
         return list;
     }
 
-    public int insertOrder(Connection conn, OrderDto order){
+    public int insertOrder(Connection conn, OrderDto order) {
         // insert => 삽입된 행수 => int
         int result = 0;
 
@@ -77,10 +77,11 @@ public class OrderDao {
             e.printStackTrace();
         } finally {
             close(pstmt);
-        } return result;
+        }
+        return result;
     }
 
-    public int selectCurrOrderCode(Connection conn){
+    public int selectCurrOrderCode(Connection conn) {
         // select문 => 한개의숫자조회 => ResultSet => int
         int currOrderCode = 0;
         PreparedStatement pstmt = null;
@@ -91,7 +92,7 @@ public class OrderDao {
             pstmt = conn.prepareStatement(query);
             rset = pstmt.executeQuery();
 
-            if(rset.next()){
+            if (rset.next()) {
                 currOrderCode = rset.getInt("curr_order_code");
             }
         } catch (SQLException e) {
@@ -99,10 +100,11 @@ public class OrderDao {
         } finally {
             close(rset);
             close(pstmt);
-        } return currOrderCode;
+        }
+        return currOrderCode;
     }
 
-    public int insertOrderMenu(Connection conn, OrderMenuDto orderMenu){
+    public int insertOrderMenu(Connection conn, OrderMenuDto orderMenu) {
         // insert => 삽입된 행수 => int
         int result = 0;
 
@@ -119,12 +121,13 @@ public class OrderDao {
 
         } catch (SQLException e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             close(pstmt);
-        } return result;
+        }
+        return result;
     }
 
-    public List<OrderDto> selectAllOrder(Connection conn){
+    public List<OrderDto> selectAllOrder(Connection conn) {
         List<OrderDto> orderList = new ArrayList<>();
         PreparedStatement pstmt = null;
         ResultSet rset = null;
@@ -134,7 +137,7 @@ public class OrderDao {
             pstmt = conn.prepareStatement(query);
             rset = pstmt.executeQuery();
 
-            while (rset.next()){
+            while (rset.next()) {
                 OrderDto order = new OrderDto();
                 order.setOrderCode(rset.getInt("order_code"));
                 order.setOrderDate(rset.getString("order_date"));
@@ -153,6 +156,72 @@ public class OrderDao {
         return orderList;
     }
 
+    public List<OrderMenuDto> selectOrderDetail(Connection conn, int orderCode) {
+        // select문 => 여러행 => ResultSet => List<MenuDto>
+        List<OrderMenuDto> list = new ArrayList<>();
+
+        PreparedStatement pstmt = null;
+        ResultSet rset = null;
+        String query = prop.getProperty("selectOrderDetail");
+
+        try {
+            pstmt = conn.prepareStatement(query);
+            // 파라미터 바인딩
+            pstmt.setInt(1, orderCode);
+            rset = pstmt.executeQuery();
+
+            while (rset.next()) {
+                // 한 row에 대해 DTO 필드에 매핑
+                MenuDto menu = new MenuDto();
+                menu.setMenuCode(rset.getInt("menu_code"));
+                menu.setMenuName(rset.getString("menu_name"));
+                menu.setMenuPrice(rset.getInt("menu_price"));
+                menu.setCategory(rset.getString("category_name"));
+
+                OrderMenuDto orderMenu = new OrderMenuDto();
+                orderMenu.setOrderAmount(rset.getInt("order_amount"));
+                orderMenu.setMenu(menu);
+
+                list.add(orderMenu);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            close(rset);
+            close(pstmt);
+        }
+        return list;
+    }
+
+    public MenuDto selectMenuByName(Connection conn, String search) {
+        // select 문 => 한행 => ResultSet => MenuDto
+        MenuDto menu = null;
+
+        PreparedStatement pstmt = null;
+        ResultSet rset = null;
+        String query = prop.getProperty("selectMenuByName");
+
+        try {
+            pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, search);
+
+            rset = pstmt.executeQuery();
+
+            if (rset.next()) {
+                menu = new MenuDto();
+                menu.setMenuCode(rset.getInt("menu_code"));
+                menu.setMenuName(rset.getString("menu_name"));
+                menu.setMenuPrice(rset.getInt("menu_price"));
+                menu.setCategory(rset.getString("category_name"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            close(rset);
+            close(pstmt);
+        }
+        return menu;
+    }
 }
 
 
